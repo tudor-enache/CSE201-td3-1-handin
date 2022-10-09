@@ -91,11 +91,18 @@ bool simulate_projectile(const double magnitude, const double angle,
         }
         else{
             t = t + simulation_interval;
-            y = v0_y * t  - 0.5 * g * t * t;
+            y = v0_y * t - 0.5 * g * t * t;
             x = v0_x * t;
         }
     }
     return hit_target;
+}
+
+void swap_double(double &a, double &b){
+    double temp;
+    temp = a;
+    a = b;
+    b = temp;
 }
 
 void merge_telemetry(double **telemetries,
@@ -105,5 +112,27 @@ void merge_telemetry(double **telemetries,
                      int &global_telemetry_current_size,
                      int &global_telemetry_max_size) {
 
-    ;
+    global_telemetry = new double[0];
+    global_telemetry_current_size = 0;
+    global_telemetry_max_size = 0;
+
+    for (int i = 0; i < tot_telemetries; i++){
+        //append to global all elements
+        for (int j = 0; j < telemetries_sizes[i]; i++){
+            global_telemetry = append_to_array(telemetries[i][3 * j], global_telemetry, global_telemetry_current_size, global_telemetry_max_size);
+            global_telemetry = append_to_array(telemetries[i][3 * j + 1], global_telemetry, global_telemetry_current_size, global_telemetry_max_size);
+            global_telemetry = append_to_array(telemetries[i][3 * j + 2], global_telemetry, global_telemetry_current_size, global_telemetry_max_size);
+        }
+    }
+
+    //sort the array
+    for (int i = 0; i < global_telemetry_current_size/3 - 1; i++){
+        for (int j = i; j < global_telemetry_current_size/3; j++){
+            if (global_telemetry[3 * i] > global_telemetry[3 * j]){
+                swap_double(global_telemetry[3 * i], global_telemetry[3 * j]);
+                swap_double(global_telemetry[3 * i + 1], global_telemetry[3 * j + 1]);
+                swap_double(global_telemetry[3 * i + 2], global_telemetry[3 * j + 2]);
+            }
+        }
+    }
 }
